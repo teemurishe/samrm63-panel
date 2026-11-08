@@ -64,8 +64,16 @@
     .project-arrow { color:#788397; font-size:19px; padding-left:4px; }
     .empty { color:var(--muted); font-size:13px; padding:16px; border:1px dashed var(--line); border-radius:14px; }
     footer { border-top:1px solid var(--line); margin-top:48px; padding-top:20px; color:#737e90; font-size:11px; display:flex; justify-content:space-between; gap:16px; }
-    .admin-trigger { position:fixed; right:17px; bottom:14px; width:28px; height:28px; border:0; background:transparent; color:#667080; opacity:.24; cursor:pointer; border-radius:8px; font-size:15px; }
-    .admin-trigger:hover { opacity:.85; background:rgba(255,255,255,.07); }
+    .admin-trigger {
+      position:fixed; right:18px; bottom:18px; z-index:5; display:flex; align-items:center; gap:9px;
+      min-height:42px; padding:0 14px; border:1px solid rgba(255,255,255,.16);
+      background:rgba(29,36,49,.94); color:#dce2ec; cursor:pointer; border-radius:13px;
+      font:600 12px/1 inherit; opacity:.78; box-shadow:0 8px 28px rgba(0,0,0,.28);
+      backdrop-filter:blur(10px); transition:opacity .18s, border-color .18s, transform .18s;
+    }
+    .admin-trigger:hover, .admin-trigger:focus-visible { opacity:1; border-color:rgba(231,123,126,.65); transform:translateY(-2px); outline:none; }
+    .admin-trigger .gear { font-size:17px; line-height:1; color:#e77b7e; }
+    @media (max-width:650px) { .admin-trigger { right:12px; bottom:12px; min-height:44px; padding:0 13px; opacity:.94; } }
     .overlay { display:none; position:fixed; inset:0; z-index:10; background:rgba(5,7,12,.78); backdrop-filter:blur(8px); padding:20px; overflow:auto; }
     .overlay.open { display:grid; place-items:center; }
     .modal { width:min(760px,100%); max-height:min(88vh,900px); overflow:auto; background:#171c27; border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:22px; }
@@ -131,7 +139,7 @@
     </footer>
   </main>
 
-  <button class="admin-trigger" id="adminTrigger" aria-label="Открыть вход администратора" title="">·</button>
+  <button class="admin-trigger" id="adminTrigger" aria-label="Открыть редактор сайта" title="Редактировать сайт"><span class="gear">⚙</span><span>Редактировать</span></button>
 
   <div class="overlay" id="pinOverlay">
     <div class="modal lock-box">
@@ -150,8 +158,8 @@
       <div class="editor-section">
         <div class="item-top"><span>Публикация на GitHub</span><span style="color:#78c7a0">● Прямая публикация</span></div>
         <div class="row-fields">
-          <div class="field"><label>Владелец GitHub (username)</label><input id="ghOwner" placeholder="например, teemurishe" autocomplete="off"></div>
-          <div class="field"><label>Репозиторий</label><input id="ghRepo" placeholder="например, samaramen-panel" autocomplete="off"></div>
+          <div class="field"><label>Владелец GitHub (username)</label><input id="ghOwner" value="teemurishe" placeholder="например, teemurishe" autocomplete="off"></div>
+          <div class="field"><label>Репозиторий</label><input id="ghRepo" value="samrm63-panel" placeholder="например, samrm63-panel" autocomplete="off"></div>
         </div>
         <div class="row-fields">
           <div class="field"><label>Ветка</label><input id="ghBranch" value="main" autocomplete="off"></div>
