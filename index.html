@@ -171,29 +171,69 @@
 /* DATA_START — блок с проектами, который редактор обновляет при публикации. */
 const DEFAULT_DATA = [
   {
-    title: "HR",
-    icon: "👥",
-    items: [
-      { name: "HR-график", icon: "📅", description: "График и расписание сотрудников", url: "https://script.google.com/macros/s/AKfycbyFusX5GFQqlulJuWHFH-g9he6s6-iKsaETke2utuNvB9byP0bAbRWJGqCqMJq0Bg1B/exec" },
-      { name: "Справочник для сотрудников", icon: "📖", description: "Рабочая информация и справочные материалы", url: "https://script.google.com/macros/s/AKfycbzv7TQJYDyB94TNKHauy2TkoMBHmpS8FSVuFMQ_SXxOmfFC9cmBv0AY5E8ie4ctdCTh/exec" },
-      { name: "Админка HR", icon: "🛠️", description: "Администрирование HR-системы", url: "https://script.google.com/macros/s/AKfycby6xDMYW4EMWw4Ai5p0mR8A4lNzq0_t0d-i5JUkulLFmNpULdvS3NXcyxG1S-YL5UMT/exec" },
-      { name: "HR-синхронизация с Google Calendar", icon: "🔄", description: "Сервис синхронизации расписания с календарём", url: "https://script.google.com/macros/s/AKfycbzKfGLrmpVwYCCFOe_KvdszLcEFcIgqsofNEMEX5CQbXhsCqK6M46Llz95gsVTmBSyTVw/exec" }
+    "title": "HR",
+    "icon": "👥",
+    "items": [
+      {
+        "name": "HR-график",
+        "icon": "📅",
+        "description": "График и расписание сотрудников",
+        "url": "https://script.google.com/macros/s/AKfycbyFusX5GFQqlulJuWHFH-g9he6s6-iKsaETke2utuNvB9byP0bAbRWJGqCqMJq0Bg1B/exec"
+      },
+      {
+        "name": "Админка HR",
+        "icon": "🛠️",
+        "description": "Администрирование HR-системы",
+        "url": "https://script.google.com/macros/s/AKfycby6xDMYW4EMWw4Ai5p0mR8A4lNzq0_t0d-i5JUkulLFmNpULdvS3NXcyxG1S-YL5UMT/exec"
+      },
+      {
+        "name": "HR-синхронизация с Google Calendar",
+        "icon": "🔄",
+        "description": "Сервис синхронизации расписания с календарём",
+        "url": "https://script.google.com/macros/s/AKfycbzKfGLrmpVwYCCFOe_KvdszLcEFcIgqsofNEMEX5CQbXhsCqK6M46Llz95gsVTmBSyTVw/exec"
+      }
     ]
   },
   {
-    title: "Товары",
-    icon: "📦",
-    items: [
-      { name: "Справочник для клиентов", icon: "📚", description: "Каталог и информация для покупателей", url: "https://script.google.com/macros/s/AKfycbwdjg2avcnJY2-Fu0GFY4W-HhYcJ3Qg2tIKT6KTefzNgjq28NKKO5kIxuagZr6BkVU/exec" },
-      { name: "Доставка для клиентов", icon: "🛵", description: "Сайт заказа и доставки", url: "https://teemurishe.github.io/samaramen/" }
+    "title": "Товары",
+    "icon": "📦",
+    "items": [
+      {
+        "name": "Справочник для клиентов",
+        "icon": "📚",
+        "description": "Каталог и информация для покупателей в зале",
+        "url": "https://script.google.com/macros/s/AKfycbwdjg2avcnJY2-Fu0GFY4W-HhYcJ3Qg2tIKT6KTefzNgjq28NKKO5kIxuagZr6BkVU/exec"
+      },
+      {
+        "name": "Доставка для клиентов",
+        "icon": "🛵",
+        "description": "Сайт заказа и доставки для клиентов",
+        "url": "https://teemurishe.github.io/samaramen/"
+      },
+      {
+        "name": "Справочник для сотрудников",
+        "icon": "📖",
+        "description": "Информация и редактирование информации о товарах и остатках для сотрудников",
+        "url": "https://script.google.com/macros/s/AKfycbzv7TQJYDyB94TNKHauy2TkoMBHmpS8FSVuFMQ_SXxOmfFC9cmBv0AY5E8ie4ctdCTh/exec"
+      }
     ]
   },
   {
-    title: "API",
-    icon: "⚙️",
-    items: [
-      { name: "YML-фид", icon: "📝", description: "Выгрузка товарного фида", url: "https://script.google.com/macros/s/AKfycbxu4T-NDXcmIk0LlZCkoeSoJl8C-N1tPnX61nZTvHz__OOrbaFARFAJwuiA_rxmzEM/exec" },
-      { name: "API доставки", icon: "🌐", description: "Проект Apps Script — исходный код и настройки", url: "https://script.google.com/home/projects/1Xsmj7m_laN6U_PYPxiKfheo9hSz_PqIUutTQwPhAHRqUGWmLmpGOKnK1/edit" }
+    "title": "API",
+    "icon": "⚙️",
+    "items": [
+      {
+        "name": "YML-фид",
+        "icon": "📝",
+        "description": "Выгрузка товарного фида",
+        "url": "https://script.google.com/macros/s/AKfycbxu4T-NDXcmIk0LlZCkoeSoJl8C-N1tPnX61nZTvHz__OOrbaFARFAJwuiA_rxmzEM/exec"
+      },
+      {
+        "name": "API доставки",
+        "icon": "🌐",
+        "description": "Проект Apps Script — исходный код и настройки",
+        "url": "https://script.google.com/home/projects/1Xsmj7m_laN6U_PYPxiKfheo9hSz_PqIUutTQwPhAHRqUGWmLmpGOKnK1/edit"
+      }
     ]
   }
 ];
@@ -222,7 +262,7 @@ const GITHUB_CONFIG = {
   repo: "samrm63-panel",
   branch: "main",
   path: "index.html",
-  token: "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"
+  token: "DELETED"
 };
 function getGitHubSettings() {
   return {
