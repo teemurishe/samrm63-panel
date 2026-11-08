@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131b">
+  <title>СамаРамён — Рабочая панель</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10131b;
+      --panel: #171c27;
+      --panel-2: #1d2431;
+      --line: rgba(255,255,255,.09);
+      --text: #f2f4f8;
+      --muted: #9aa4b5;
+      --accent: #d94b50;
+      --accent-soft: rgba(217,75,80,.13);
+      --green: #78c7a0;
+      --shadow: 0 18px 50px rgba(0,0,0,.24);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      background:
+        radial-gradient(ellipse at 12% 0%, rgba(217,75,80,.12), transparent 35%),
+        radial-gradient(ellipse at 100% 80%, rgba(87,111,160,.10), transparent 32%),
+        var(--bg);
+      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 58px 0 76px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:48px; }
+    .brand { display:flex; align-items:center; gap:14px; }
+    .brand-mark {
+      width:48px; height:48px; display:grid; place-items:center; border-radius:15px;
+      background:linear-gradient(145deg,#e45b5f,#a92f3b); font-size:24px;
+      box-shadow:0 8px 24px rgba(217,75,80,.25);
+    }
+    .brand-name { font-size:18px; font-weight:750; letter-spacing:.02em; }
+    .brand-sub { color:var(--muted); font-size:12px; margin-top:2px; }
+    .status { color:var(--muted); font-size:12px; display:flex; align-items:center; gap:8px; }
+    .status:before { content:""; width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 12px rgba(120,199,160,.5); }
+    .intro { margin-bottom:36px; }
+    .eyebrow { color:#e77b7e; text-transform:uppercase; letter-spacing:.16em; font-size:11px; font-weight:750; }
+    h1 { font-size:clamp(30px,5vw,46px); letter-spacing:-.045em; line-height:1.1; margin:12px 0 12px; }
+    .intro p { color:var(--muted); margin:0; max-width:620px; font-size:15px; }
+    .section { margin-top:34px; }
+    .section-head { display:flex; align-items:center; gap:12px; margin-bottom:15px; }
+    .section-icon { width:34px; height:34px; border:1px solid var(--line); border-radius:11px; display:grid; place-items:center; background:rgba(255,255,255,.035); font-size:16px; }
+    .section-title { font-size:17px; font-weight:730; letter-spacing:-.02em; }
+    .section-count { color:var(--muted); font-size:12px; margin-left:auto; }
+    .cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .project {
+      display:flex; align-items:center; gap:15px; min-width:0; padding:18px;
+      background:linear-gradient(145deg,rgba(29,36,49,.96),rgba(23,28,39,.96));
+      border:1px solid var(--line); border-radius:16px; text-decoration:none; color:inherit;
+      transition:border-color .18s, transform .18s, background .18s;
+    }
+    .project:hover { border-color:rgba(231,123,126,.42); transform:translateY(-2px); background:#202838; }
+    .project-icon { flex:0 0 46px; height:46px; display:grid; place-items:center; border-radius:13px; background:var(--accent-soft); font-size:22px; }
+    .project-copy { min-width:0; flex:1; }
+    .project-name { font-weight:680; font-size:14px; margin-bottom:3px; }
+    .project-desc { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .project-arrow { color:#788397; font-size:19px; padding-left:4px; }
+    .empty { color:var(--muted); font-size:13px; padding:16px; border:1px dashed var(--line); border-radius:14px; }
+    footer { border-top:1px solid var(--line); margin-top:48px; padding-top:20px; color:#737e90; font-size:11px; display:flex; justify-content:space-between; gap:16px; }
+    .admin-trigger { position:fixed; right:17px; bottom:14px; width:28px; height:28px; border:0; background:transparent; color:#667080; opacity:.24; cursor:pointer; border-radius:8px; font-size:15px; }
+    .admin-trigger:hover { opacity:.85; background:rgba(255,255,255,.07); }
+    .overlay { display:none; position:fixed; inset:0; z-index:10; background:rgba(5,7,12,.78); backdrop-filter:blur(8px); padding:20px; overflow:auto; }
+    .overlay.open { display:grid; place-items:center; }
+    .modal { width:min(760px,100%); max-height:min(88vh,900px); overflow:auto; background:#171c27; border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:22px; }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; gap:15px; margin-bottom:18px; }
+    .modal h2 { margin:0; font-size:20px; }
+    .close { border:0; background:rgba(255,255,255,.07); color:var(--text); width:34px; height:34px; border-radius:10px; cursor:pointer; font-size:18px; }
+    .hint { color:var(--muted); font-size:12px; margin:0 0 18px; }
+    label { display:block; color:#b7c0ce; font-size:12px; margin:0 0 6px; }
+    input, textarea, select {
+      width:100%; border:1px solid var(--line); background:#10151f; color:var(--text);
+      border-radius:10px; padding:10px 11px; font:inherit; outline:none;
+    }
+    input:focus, textarea:focus, select:focus { border-color:rgba(231,123,126,.65); }
+    textarea { min-height:65px; resize:vertical; }
+    .field { margin-bottom:12px; }
+    .row-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .editor-section { border:1px solid var(--line); border-radius:14px; padding:14px; margin:14px 0; background:rgba(255,255,255,.018); }
+    .editor-section-head { display:flex; gap:10px; align-items:end; margin-bottom:12px; }
+    .editor-section-head .field { flex:1; margin:0; }
+    .item-editor { border-top:1px solid var(--line); padding:13px 0 2px; margin-top:12px; }
+    .item-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; color:#dce1e9; font-size:12px; font-weight:650; }
+    .btn-row { display:flex; flex-wrap:wrap; gap:9px; margin-top:15px; }
+    button.action { border:1px solid var(--line); background:#252d3c; color:var(--text); padding:9px 13px; border-radius:10px; cursor:pointer; font:600 12px inherit; }
+    button.primary { background:#c9434b; border-color:#c9434b; }
+    button.danger { color:#f08c90; }
+    button.action:hover { filter:brightness(1.12); }
+    .message { color:var(--green); font-size:12px; min-height:18px; margin-top:10px; }
+    .lock-box { width:min(360px,100%); }
+    .lock-box input { margin:12px 0; text-align:center; letter-spacing:.25em; }
+    @media (max-width:650px) {
+      .wrap { width:min(100% - 28px, 560px); padding-top:30px; }
+      header { margin-bottom:38px; }
+      .status { display:none; }
+      .cards { grid-template-columns:1fr; gap:9px; }
+      .project { padding:15px; }
+      footer { flex-direction:column; }
+      .row-fields { grid-template-columns:1fr; gap:0; }
+      .modal { padding:17px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">🍜</div>
+        <div><div class="brand-name">СамаРамён</div><div class="brand-sub">Внутренняя рабочая панель</div></div>
+      </div>
+      <div class="status">Системы и инструменты</div>
+    </header>
+
+    <div class="intro">
+      <div class="eyebrow">Рабочее пространство</div>
+      <h1>Все проекты<br>в одном месте.</h1>
+      <p>Быстрый доступ к инструментам команды, административным системам и сервисам доставки.</p>
+    </div>
+
+    <div id="sections"></div>
+
+    <footer>
+      <span>СамаРамён · Рабочая инфраструктура</span>
+      <span id="footer-date"></span>
+    </footer>
+  </main>
+
+  <button class="admin-trigger" id="adminTrigger" aria-label="Открыть вход администратора" title="">·</button>
+
+  <div class="overlay" id="pinOverlay">
+    <div class="modal lock-box">
+      <div class="modal-head"><h2>Вход в редактор</h2><button class="close" data-close="pinOverlay">×</button></div>
+      <p class="hint">Введите PIN-код администратора.</p>
+      <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••">
+      <div class="btn-row"><button class="action primary" id="pinSubmit">Продолжить</button></div>
+      <div class="message" id="pinMessage"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="editorOverlay">
+    <div class="modal">
+      <div class="modal-head"><h2>Редактор панели</h2><button class="close" data-close="editorOverlay">×</button></div>
+      <p class="hint">Редактор меняет проекты и может напрямую публиковать обновлённую страницу в GitHub. Для публикации нужен Personal Access Token с правом Contents: Read and write. Токен используется только в этой вкладке и не сохраняется.</p>
+      <div class="editor-section">
+        <div class="item-top"><span>Публикация на GitHub</span><span style="color:#78c7a0">● Прямая публикация</span></div>
+        <div class="row-fields">
+          <div class="field"><label>Владелец GitHub (username)</label><input id="ghOwner" placeholder="например, teemurishe" autocomplete="off"></div>
+          <div class="field"><label>Репозиторий</label><input id="ghRepo" placeholder="например, samaramen-panel" autocomplete="off"></div>
+        </div>
+        <div class="row-fields">
+          <div class="field"><label>Ветка</label><input id="ghBranch" value="main" autocomplete="off"></div>
+          <div class="field"><label>Путь к файлу</label><input id="ghPath" value="index.html" autocomplete="off"></div>
+        </div>
+        <div class="field"><label>GitHub Personal Access Token</label><input id="ghToken" type="password" placeholder="github_pat_…" autocomplete="off"></div>
+        <p class="hint" style="margin:0">Создай токен на GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выбери нужный репозиторий и разрешение <b>Contents: Read and write</b>. Для публичного сайта этого достаточно. Не отправляй токен никому.</p>
+        <div class="btn-row"><button class="action primary" id="publishGitHub">Опубликовать на GitHub</button></div>
+        <div class="message" id="githubMessage" aria-live="polite"></div>
+      </div>
+      <div id="editorContent"></div>
+      <div class="btn-row">
+        <button class="action" id="addSection">＋ Добавить секцию</button>
+        <button class="action primary" id="saveConfig">Сохранить изменения</button>
+        <button class="action" id="exportConfig">Скачать конфигурацию</button>
+        <button class="action" id="resetConfig">Сбросить исходные данные</button>
+      </div>
+      <div class="message" id="editorMessage"></div>
+    </div>
+  </div>
+
+<script>
+/* DATA_START — блок с проектами, который редактор обновляет при публикации. */
+const DEFAULT_DATA = [
+  {
+    title: "HR",
+    icon: "👥",
+    items: [
+      { name: "HR-график", icon: "📅", description: "График и расписание сотрудников", url: "https://script.google.com/macros/s/AKfycbyFusX5GFQqlulJuWHFH-g9he6s6-iKsaETke2utuNvB9byP0bAbRWJGqCqMJq0Bg1B/exec" },
+      { name: "Справочник для сотрудников", icon: "📖", description: "Рабочая информация и справочные материалы", url: "https://script.google.com/macros/s/AKfycbzv7TQJYDyB94TNKHauy2TkoMBHmpS8FSVuFMQ_SXxOmfFC9cmBv0AY5E8ie4ctdCTh/exec" },
+      { name: "Админка HR", icon: "🛠️", description: "Администрирование HR-системы", url: "https://script.google.com/macros/s/AKfycby6xDMYW4EMWw4Ai5p0mR8A4lNzq0_t0d-i5JUkulLFmNpULdvS3NXcyxG1S-YL5UMT/exec" },
+      { name: "HR-синхронизация с Google Calendar", icon: "🔄", description: "Сервис синхронизации расписания с календарём", url: "https://script.google.com/macros/s/AKfycbzKfGLrmpVwYCCFOe_KvdszLcEFcIgqsofNEMEX5CQbXhsCqK6M46Llz95gsVTmBSyTVw/exec" }
+    ]
+  },
+  {
+    title: "Товары",
+    icon: "📦",
+    items: [
+      { name: "Справочник для клиентов", icon: "📚", description: "Каталог и информация для покупателей", url: "https://script.google.com/macros/s/AKfycbwdjg2avcnJY2-Fu0GFY4W-HhYcJ3Qg2tIKT6KTefzNgjq28NKKO5kIxuagZr6BkVU/exec" },
+      { name: "Доставка для клиентов", icon: "🛵", description: "Сайт заказа и доставки", url: "https://teemurishe.github.io/samaramen/" }
+    ]
+  },
+  {
+    title: "API",
+    icon: "⚙️",
+    items: [
+      { name: "YML-фид", icon: "📝", description: "Выгрузка товарного фида", url: "https://script.google.com/macros/s/AKfycbxu4T-NDXcmIk0LlZCkoeSoJl8C-N1tPnX61nZTvHz__OOrbaFARFAJwuiA_rxmzEM/exec" },
+      { name: "API доставки", icon: "🌐", description: "Проект Apps Script — исходный код и настройки", url: "https://script.google.com/home/projects/1Xsmj7m_laN6U_PYPxiKfheo9hSz_PqIUutTQwPhAHRqUGWmLmpGOKnK1/edit" }
+    ]
+  }
+];
+/* DATA_END */
+
+const STORAGE_KEY = "samaramen-work-panel-v1";
+let data = loadData();
+let githubToken = "";
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : structuredClone(DEFAULT_DATA);
+  } catch { return structuredClone(DEFAULT_DATA); }
+}
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function safeUrl(value) {
+  try { const u = new URL(value); return ["https:", "http:"].includes(u.protocol) ? u.href : "#"; }
+  catch { return "#"; }
+}
+
+function loadGitHubSettings() {
+  try { return JSON.parse(localStorage.getItem("samaramen-github-settings") || "{}"); }
+  catch { return {}; }
+}
+function getGitHubSettings() {
+  return {
+    owner: document.getElementById("ghOwner").value.trim(),
+    repo: document.getElementById("ghRepo").value.trim(),
+    branch: document.getElementById("ghBranch").value.trim() || "main",
+    path: document.getElementById("ghPath").value.trim() || "index.html"
+  };
+}
+function encodeBase64Utf8(value) {
+  return btoa(unescape(encodeURIComponent(value)));
+}
+function decodeBase64Utf8(value) {
+  return decodeURIComponent(escape(atob(value.replace(/\\s/g, ""))));
+}
+document.getElementById("publishGitHub").addEventListener("click", publishToGitHub);
+async function publishToGitHub() {
+  const message = document.getElementById("githubMessage");
+  const button = document.getElementById("publishGitHub");
+  readEditor();
+  const cfg = getGitHubSettings();
+  const token = document.getElementById("ghToken").value.trim();
+  if (!cfg.owner || !cfg.repo || !cfg.path || !token) {
+    message.textContent = "Заполни владельца, репозиторий, путь к файлу и токен.";
+    return;
+  }
+  if (cfg.path.startsWith("/") || cfg.path.includes("..")) {
+    message.textContent = "Укажи относительный путь внутри репозитория, например index.html.";
+    return;
+  }
+  if (!confirm("Опубликовать текущие изменения в " + cfg.owner + "/" + cfg.repo + " (" + cfg.branch + ")?")) return;
+
+  button.disabled = true;
+  button.textContent = "Публикация…";
+  message.textContent = "Получаю текущую версию файла из GitHub…";
+  try {
+    const api = "https://api.github.com/repos/" + encodeURIComponent(cfg.owner) + "/" +
+      encodeURIComponent(cfg.repo) + "/contents/" + cfg.path.split("/").map(encodeURIComponent).join("/");
+    const headers = {
+      "Accept": "application/vnd.github+json",
+      "Authorization": "Bearer " + token,
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+    const getResponse = await fetch(api + "?ref=" + encodeURIComponent(cfg.branch), { headers });
+    if (!getResponse.ok) {
+      const detail = await getResponse.json().catch(() => ({}));
+      throw new Error(getResponse.status === 404
+        ? "Файл не найден. Проверь владельца, репозиторий, ветку и путь."
+        : (detail.message || "GitHub вернул ошибку " + getResponse.status));
+    }
+    const fileInfo = await getResponse.json();
+    const currentHtml = decodeBase64Utf8(fileInfo.content || "");
+    const marker = /\/\* DATA_START[^*]*\*\/[\s\S]*?\/\* DATA_END \*\//;
+    if (!marker.test(currentHtml)) {
+      throw new Error("В index.html не найден блок данных редактора. Сначала загрузи на GitHub эту версию файла панели.");
+    }
+    const replacement = "/* DATA_START — редактируемые проекты. */\nconst DEFAULT_DATA = " +
+      JSON.stringify(data, null, 2) + ";\n/* DATA_END */";
+    const updatedHtml = currentHtml.replace(marker, replacement);
+    message.textContent = "Отправляю обновлённый файл в GitHub…";
+    const putResponse = await fetch(api, {
+      method: "PUT",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: "Обновление рабочей панели через редактор",
+        content: encodeBase64Utf8(updatedHtml),
+        sha: fileInfo.sha,
+        branch: cfg.branch
+      })
+    });
+    const result = await putResponse.json().catch(() => ({}));
+    if (!putResponse.ok) throw new Error(result.message || "Не удалось сохранить файл: " + putResponse.status);
+
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem("samaramen-github-settings", JSON.stringify(cfg));
+    render();
+    message.textContent = "Опубликовано! GitHub принял изменения. Pages обновится автоматически через несколько минут.";
+  } catch (error) {
+    message.textContent = "Ошибка: " + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "Опубликовать на GitHub";
+    document.getElementById("ghToken").value = "";
+    githubToken = "";
+  }
+}
+
+function render() {
+  const root = document.getElementById("sections");
+  root.innerHTML = data.map((section, si) => `
+    <section class="section">
+      <div class="section-head">
+        <div class="section-icon">${esc(section.icon || "▦")}</div>
+        <div class="section-title">${esc(section.title)}</div>
+        <div class="section-count">${section.items.length} ${plural(section.items.length)}</div>
+      </div>
+      ${section.items.length ? `<div class="cards">${section.items.map(item => `
+        <a class="project" href="${esc(safeUrl(item.url))}" target="_blank" rel="noopener noreferrer">
+          <div class="project-icon">${esc(item.icon || "↗")}</div>
+          <div class="project-copy">
+            <div class="project-name">${esc(item.name)}</div>
+            <div class="project-desc">${esc(item.description || item.url)}</div>
+          </div>
+          <div class="project-arrow">↗</div>
+        </a>`).join("")}</div>` : `<div class="empty">В этой секции пока нет проектов.</div>`}
+    </section>`).join("");
+}
+function plural(n) {
+  const m = n % 10, h = n % 100;
+  return h >= 11 && h <= 14 ? "проектов" : m === 1 ? "проект" : m >= 2 && m <= 4 ? "проекта" : "проектов";
+}
+function open(id) { document.getElementById(id).classList.add("open"); }
+function close(id) { document.getElementById(id).classList.remove("open"); }
+
+document.getElementById("footer-date").textContent = new Date().getFullYear();
+document.getElementById("adminTrigger").addEventListener("click", () => {
+  document.getElementById("pinInput").value = "";
+  document.getElementById("pinMessage").textContent = "";
+  open("pinOverlay");
+  setTimeout(() => document.getElementById("pinInput").focus(), 50);
+});
+document.getElementById("pinSubmit").addEventListener("click", checkPin);
+document.getElementById("pinInput").addEventListener("keydown", e => { if (e.key === "Enter") checkPin(); });
+function checkPin() {
+  if (document.getElementById("pinInput").value === "270918") {
+    close("pinOverlay"); buildEditor(); open("editorOverlay");
+  } else {
+    document.getElementById("pinMessage").textContent = "Неверный PIN-код.";
+    document.getElementById("pinInput").value = "";
+  }
+}
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => close(b.dataset.close)));
+document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e => { if (e.target === o) close(o.id); }));
+
+function buildEditor() {
+  const gh = loadGitHubSettings();
+  document.getElementById("ghOwner").value = gh.owner || "";
+  document.getElementById("ghRepo").value = gh.repo || "";
+  document.getElementById("ghBranch").value = gh.branch || "main";
+  document.getElementById("ghPath").value = gh.path || "index.html";
+  document.getElementById("ghToken").value = "";
+  githubToken = "";
+  document.getElementById("githubMessage").textContent = "";
+  const root = document.getElementById("editorContent");
+  root.innerHTML = data.map((s, si) => `
+    <div class="editor-section" data-section="${si}">
+      <div class="editor-section-head">
+        <div class="field"><label>Название секции</label><input data-s-title="${si}" value="${esc(s.title)}"></div>
+        <div class="field" style="max-width:100px"><label>Иконка</label><input data-s-icon="${si}" value="${esc(s.icon || "")}"></div>
+        <button class="action danger" data-remove-section="${si}">Удалить</button>
+      </div>
+      <div class="items">${s.items.map((it, ii) => itemEditor(it, si, ii)).join("")}</div>
+      <button class="action" data-add-item="${si}">＋ Добавить проект</button>
+    </div>`).join("");
+  root.querySelectorAll("[data-remove-section]").forEach(b => b.onclick = () => {
+    if (confirm("Удалить секцию и все проекты внутри неё?")) { readEditor(); data.splice(+b.dataset.removeSection, 1); buildEditor(); }
+  });
+  root.querySelectorAll("[data-add-item]").forEach(b => b.onclick = () => {
+    readEditor();
+    const s = data[+b.dataset.addItem];
+    s.items.push({ name:"Новый проект", icon:"🔗", description:"", url:"https://" }); buildEditor();
+  });
+  root.querySelectorAll("[data-remove-item]").forEach(b => b.onclick = () => {
+    readEditor();
+    const s = data[+b.dataset.removeItem], i = +b.dataset.index;
+    s.items.splice(i, 1); buildEditor();
+  });
+}
+function itemEditor(it, si, ii) {
+  return `<div class="item-editor">
+    <div class="item-top"><span>Проект ${ii + 1}</span><button class="action danger" data-remove-item="${si}" data-index="${ii}">Удалить проект</button></div>
+    <div class="row-fields">
+      <div class="field"><label>Название</label><input data-field="name" data-s="${si}" data-i="${ii}" value="${esc(it.name)}"></div>
+      <div class="field"><label>Иконка</label><input data-field="icon" data-s="${si}" data-i="${ii}" value="${esc(it.icon || "")}"></div>
+    </div>
+    <div class="field"><label>Описание</label><input data-field="description" data-s="${si}" data-i="${ii}" value="${esc(it.description || "")}"></div>
+    <div class="field"><label>Адрес сайта</label><input data-field="url" data-s="${si}" data-i="${ii}" value="${esc(it.url)}"></div>
+  </div>`;
+}
+function readEditor() {
+  document.querySelectorAll("[data-s-title]").forEach(el => data[+el.dataset.sTitle].title = el.value.trim());
+  document.querySelectorAll("[data-s-icon]").forEach(el => data[+el.dataset.sIcon].icon = el.value.trim());
+  document.querySelectorAll("[data-field]").forEach(el => {
+    const s = +el.dataset.s, i = +el.dataset.i, field = el.dataset.field;
+    data[s].items[i][field] = el.value.trim();
+  });
+}
+document.getElementById("addSection").addEventListener("click", () => {
+  readEditor(); data.push({ title:"Новая секция", icon:"▦", items:[] }); buildEditor();
+});
+document.getElementById("saveConfig").addEventListener("click", () => {
+  readEditor();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    render(); document.getElementById("editorMessage").textContent = "Сохранено в этом браузере. Для всех посетителей нажми «Опубликовать на GitHub».";
+  } catch { document.getElementById("editorMessage").textContent = "Не удалось сохранить изменения."; }
+});
+document.getElementById("exportConfig").addEventListener("click", () => {
+  readEditor();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "samaramen-panel-data.json"; a.click();
+  URL.revokeObjectURL(a.href);
+  document.getElementById("editorMessage").textContent = "Конфигурация скачана. Для публикации перенесите её содержимое в DEFAULT_DATA в index.html.";
+});
+document.getElementById("resetConfig").addEventListener("click", () => {
+  if (!confirm("Вернуть исходные секции и ссылки? Локальные изменения будут потеряны.")) return;
+  data = structuredClone(DEFAULT_DATA); localStorage.removeItem(STORAGE_KEY); buildEditor(); render();
+  document.getElementById("editorMessage").textContent = "Исходные данные восстановлены.";
+});
+render();
+</script>
+</body>
+</html>
