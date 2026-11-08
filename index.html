@@ -65,15 +65,12 @@
     .empty { color:var(--muted); font-size:13px; padding:16px; border:1px dashed var(--line); border-radius:14px; }
     footer { border-top:1px solid var(--line); margin-top:48px; padding-top:20px; color:#737e90; font-size:11px; display:flex; justify-content:space-between; gap:16px; }
     .admin-trigger {
-      position:fixed; right:18px; bottom:18px; z-index:5; display:flex; align-items:center; gap:9px;
-      min-height:42px; padding:0 14px; border:1px solid rgba(255,255,255,.16);
-      background:rgba(29,36,49,.94); color:#dce2ec; cursor:pointer; border-radius:13px;
-      font:600 12px/1 inherit; opacity:.78; box-shadow:0 8px 28px rgba(0,0,0,.28);
-      backdrop-filter:blur(10px); transition:opacity .18s, border-color .18s, transform .18s;
+      border:0; background:transparent; color:#9aa4b5; cursor:pointer;
+      padding:3px 6px; margin-left:auto; font:16px/1 inherit; opacity:.22;
+      border-radius:7px; transition:opacity .15s;
     }
-    .admin-trigger:hover, .admin-trigger:focus-visible { opacity:1; border-color:rgba(231,123,126,.65); transform:translateY(-2px); outline:none; }
-    .admin-trigger .gear { font-size:17px; line-height:1; color:#e77b7e; }
-    @media (max-width:650px) { .admin-trigger { right:12px; bottom:12px; min-height:44px; padding:0 13px; opacity:.94; } }
+    .admin-trigger:hover, .admin-trigger:focus-visible { opacity:.75; outline:none; }
+    .admin-trigger .gear { font-size:15px; line-height:1; }
     .overlay { display:none; position:fixed; inset:0; z-index:10; background:rgba(5,7,12,.78); backdrop-filter:blur(8px); padding:20px; overflow:auto; }
     .overlay.open { display:grid; place-items:center; }
     .modal { width:min(760px,100%); max-height:min(88vh,900px); overflow:auto; background:#171c27; border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:22px; }
@@ -136,10 +133,9 @@
     <footer>
       <span>СамаРамён · Рабочая инфраструктура</span>
       <span id="footer-date"></span>
+      <button class="admin-trigger" id="adminTrigger" aria-label="Открыть редактор" title="Редактировать"><span class="gear">⚙</span></button>
     </footer>
   </main>
-
-  <button class="admin-trigger" id="adminTrigger" aria-label="Открыть редактор сайта" title="Редактировать сайт"><span class="gear">⚙</span><span>Редактировать</span></button>
 
   <div class="overlay" id="pinOverlay">
     <div class="modal lock-box">
@@ -154,19 +150,9 @@
   <div class="overlay" id="editorOverlay">
     <div class="modal">
       <div class="modal-head"><h2>Редактор панели</h2><button class="close" data-close="editorOverlay">×</button></div>
-      <p class="hint">Редактор меняет проекты и может напрямую публиковать обновлённую страницу в GitHub. Для публикации нужен Personal Access Token с правом Contents: Read and write. Токен используется только в этой вкладке и не сохраняется.</p>
+      <p class="hint">Изменения можно сохранить локально или сразу опубликовать на GitHub. Репозиторий и файл уже настроены.</p>
       <div class="editor-section">
-        <div class="item-top"><span>Публикация на GitHub</span><span style="color:#78c7a0">● Прямая публикация</span></div>
-        <div class="row-fields">
-          <div class="field"><label>Владелец GitHub (username)</label><input id="ghOwner" value="teemurishe" placeholder="например, teemurishe" autocomplete="off"></div>
-          <div class="field"><label>Репозиторий</label><input id="ghRepo" value="samrm63-panel" placeholder="например, samrm63-panel" autocomplete="off"></div>
-        </div>
-        <div class="row-fields">
-          <div class="field"><label>Ветка</label><input id="ghBranch" value="main" autocomplete="off"></div>
-          <div class="field"><label>Путь к файлу</label><input id="ghPath" value="index.html" autocomplete="off"></div>
-        </div>
-        <div class="field"><label>GitHub Personal Access Token</label><input id="ghToken" type="password" placeholder="github_pat_…" autocomplete="off"></div>
-        <p class="hint" style="margin:0">Создай токен на GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выбери нужный репозиторий и разрешение <b>Contents: Read and write</b>. Для публичного сайта этого достаточно. Не отправляй токен никому.</p>
+        <div class="item-top"><span>Публикация</span><span style="color:#78c7a0">● teemurishe / samrm63-panel</span></div>
         <div class="btn-row"><button class="action primary" id="publishGitHub">Опубликовать на GitHub</button></div>
         <div class="message" id="githubMessage" aria-live="polite"></div>
       </div>
@@ -231,16 +217,19 @@ function safeUrl(value) {
   catch { return "#"; }
 }
 
-function loadGitHubSettings() {
-  try { return JSON.parse(localStorage.getItem("samaramen-github-settings") || "{}"); }
-  catch { return {}; }
-}
+const GITHUB_CONFIG = {
+  owner: "teemurishe",
+  repo: "samrm63-panel",
+  branch: "main",
+  path: "index.html",
+  token: "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"
+};
 function getGitHubSettings() {
   return {
-    owner: document.getElementById("ghOwner").value.trim(),
-    repo: document.getElementById("ghRepo").value.trim(),
-    branch: document.getElementById("ghBranch").value.trim() || "main",
-    path: document.getElementById("ghPath").value.trim() || "index.html"
+    owner: GITHUB_CONFIG.owner,
+    repo: GITHUB_CONFIG.repo,
+    branch: GITHUB_CONFIG.branch,
+    path: GITHUB_CONFIG.path
   };
 }
 function encodeBase64Utf8(value) {
@@ -255,11 +244,7 @@ async function publishToGitHub() {
   const button = document.getElementById("publishGitHub");
   readEditor();
   const cfg = getGitHubSettings();
-  const token = document.getElementById("ghToken").value.trim();
-  if (!cfg.owner || !cfg.repo || !cfg.path || !token) {
-    message.textContent = "Заполни владельца, репозиторий, путь к файлу и токен.";
-    return;
-  }
+  const token = GITHUB_CONFIG.token;
   if (cfg.path.startsWith("/") || cfg.path.includes("..")) {
     message.textContent = "Укажи относительный путь внутри репозитория, например index.html.";
     return;
@@ -308,7 +293,6 @@ async function publishToGitHub() {
     if (!putResponse.ok) throw new Error(result.message || "Не удалось сохранить файл: " + putResponse.status);
 
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.setItem("samaramen-github-settings", JSON.stringify(cfg));
     render();
     message.textContent = "Опубликовано! GitHub принял изменения. Pages обновится автоматически через несколько минут.";
   } catch (error) {
@@ -316,8 +300,7 @@ async function publishToGitHub() {
   } finally {
     button.disabled = false;
     button.textContent = "Опубликовать на GitHub";
-    document.getElementById("ghToken").value = "";
-    githubToken = "";
+
   }
 }
 
@@ -369,13 +352,6 @@ document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click
 document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e => { if (e.target === o) close(o.id); }));
 
 function buildEditor() {
-  const gh = loadGitHubSettings();
-  document.getElementById("ghOwner").value = gh.owner || "";
-  document.getElementById("ghRepo").value = gh.repo || "";
-  document.getElementById("ghBranch").value = gh.branch || "main";
-  document.getElementById("ghPath").value = gh.path || "index.html";
-  document.getElementById("ghToken").value = "";
-  githubToken = "";
   document.getElementById("githubMessage").textContent = "";
   const root = document.getElementById("editorContent");
   root.innerHTML = data.map((s, si) => `
