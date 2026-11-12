@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10131b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="СамаРамён">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon.svg">
   <title>СамаРамён — Рабочая панель</title>
   <style>
     :root {
@@ -466,6 +473,16 @@ document.getElementById("resetConfig").addEventListener("click", () => {
   document.getElementById("editorMessage").textContent = "Исходные данные восстановлены.";
 });
 render();
+</script>
+<script>
+  // PWA: регистрация офлайн-оболочки рабочей панели.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(error => {
+        console.warn("Не удалось зарегистрировать Service Worker:", error);
+      });
+    });
+  }
 </script>
 </body>
 </html>
