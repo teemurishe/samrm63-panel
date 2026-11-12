@@ -1,0 +1,21 @@
+{
+  "id": "/samrm63-panel/",
+  "name": "СамаРамён — Рабочая панель",
+  "short_name": "СамаРамён",
+  "description": "Внутренняя рабочая панель СамаРамён",
+  "lang": "ru",
+  "start_url": "/samrm63-panel/",
+  "scope": "/samrm63-panel/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#10131b",
+  "theme_color": "#10131b",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
